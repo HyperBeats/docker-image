@@ -16,11 +16,8 @@ node -v
 # shellcheck disable=SC2086
 MODIFIED_STARTUP=$(echo -e ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')
 echo -e "${CYAN}STARTUP /home/container: ${MODIFIED_STARTUP} ${RESET_COLOR}"
-echo "⟳ Starting NodeJs..."
-echo "✓ Successfully started"
-${RESET_COLOR}"
-
-
+echo -e "${CYAN}⟳${RESET_COLOR} Starting NodeJs..."
+echo -e "${GREEN}✓${RESET_COLOR} Successfully started"
 
 # Run the Server
 # shellcheck disable=SC2086
