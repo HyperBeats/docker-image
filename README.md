@@ -14,5 +14,6 @@
   * `ghcr.io/hyperbeats/docker-image:nodejs_17`
 * [`node18`](/nodejs/18)
   * `ghcr.io/hyperbeats/docker-image:nodejs_18`
-  
+* [`node18`](/nodejs/19)
+  * `ghcr.io/hyperbeats/docker-image:nodejs_19`  
   
