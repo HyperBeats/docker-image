@@ -7,12 +7,7 @@ RUN         apt-get update \
             && npm -g install npm@latest \
             && apt-get clean \
             && rm -rf /var/lib/apt/lists/* \
-            && useradd -m -d /home/container container \
-            && locale-gen en_US.UTF-8
-
-ENV         LC_ALL=en_US.UTF-8
-ENV         LANG=en_US.UTF-8
-ENV         LANGUAGE=en_US.UTF-8
+            && useradd -m -d /home/container container
 
 USER        container
 ENV         USER=container HOME=/home/container
