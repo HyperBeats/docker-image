@@ -1,10 +1,11 @@
 #!/bin/bash
 cd /home/container || exit 1
 
-#!/bin/bash
-cd /home/container
+# Configure colors
+CYAN='\033[0;36m'
+RESET_COLOR='\033[0m'
 
-# Make internal Docker IP address available to processes.
+# Set environment variable that holds the Internal Docker IP
 INTERNAL_IP=$(ip route get 1 | awk '{print $(NF-2);exit}')
 export INTERNAL_IP
 
@@ -12,8 +13,12 @@ export INTERNAL_IP
 node -v
 
 # Replace Startup Variables
+# shellcheck disable=SC2086
 MODIFIED_STARTUP=$(echo -e ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')
-echo ":/home/container$ ${MODIFIED_STARTUP}"
+echo -e "${CYAN}STARTUP /home/container: ${MODIFIED_STARTUP} ${RESET_COLOR}"
+echo -e "${CYAN}⟳${RESET_COLOR} Starting NodeJs..."
+echo -e "${GREEN}✓${RESET_COLOR} Successfully started"
 
 # Run the Server
+# shellcheck disable=SC2086
 eval ${MODIFIED_STARTUP}
