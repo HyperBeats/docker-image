@@ -31,4 +31,22 @@
   * `ghcr.io/hyperbeats/docker-image:python_3.10`
 * [`python_3.11`](/python/3.11)
   * `ghcr.io/hyperbeats/docker-image:python_3.11`  
+
+### [Java](/java)
+
+* [`java_8`](/java/8)
+  * `ghcr.io/hyperbeats/docker-image:java_8`
+* [`java_11`](/java/11)
+  * `ghcr.io/hyperbeats/docker-image:java_11`
+* [`java_16`](/java/16)
+  * `ghcr.io/hyperbeats/docker-image:java_16`
+* [`java_17`](/java/17)
+  * `ghcr.io/hyperbeats/docker-image:java_17`
+* [`java_18`](/java/18)
+  * `ghcr.io/hyperbeats/docker-image:java_18`
+* [`java_19`](/java/19)
+  * `ghcr.io/hyperbeats/docker-image:java_19`
+* [`java_20`](/java/20)
+  * `ghcr.io/hyperbeats/docker-image:java_20` 
+  
   
