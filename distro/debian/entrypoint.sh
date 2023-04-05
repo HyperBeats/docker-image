@@ -3,6 +3,7 @@ cd /home/container
 
 CYAN='\033[0;36m'
 RESET_COLOR='\033[0m'
+GREEN='\033[0;32m'
 
 # Make internal Docker IP address available to processes.
 INTERNAL_IP=$(ip route get 1 | awk '{print $(NF-2);exit}')

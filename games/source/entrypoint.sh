@@ -78,7 +78,7 @@ echo "  / _ \/ __ \ | /| / /___/ // / __ \/ __/_  __/  _/ |/ / ___/"
 echo " / , _/ /_/ / |/ |/ /___/ _  / /_/ /\ \  / / _/ //    / (_ / "
 echo "/_/|_|\____/|__/|__/   /_//_/\____/___/ /_/ /___/_/|_/\___/  "                                                             
 echo -e "${CYAN}STARTUP /home/container: ${PARSED} ${RESET_COLOR}"
-echo -e "${CYAN}⟳${RESET_COLOR} Starting Java..."
+echo -e "${CYAN}⟳${RESET_COLOR} Starting Gmod..."
 echo -e "${GREEN}✓${RESET_COLOR} Successfully started"
 
 # shellcheck disable=SC2086
