@@ -1,4 +1,4 @@
-FROM        node:19.9-bullseye-slim
+FROM        node:19-bullseye-slim
 
 LABEL       author="HyperBeats" maintainer="contact-hyperbeats@protonmail.com"
 
