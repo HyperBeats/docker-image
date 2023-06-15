@@ -38,11 +38,11 @@ EOF
 
 printf "%s" "$password" > password.txt
 printf "%s" "$username" > username.txt
-echo "$sql_commands" | mysql -u root -p -e
+echo "$sql_commands" | /usr/sbin/mysqld & mysql -u root -p -e
 
 
 printf "\e[1;31m========================== \e[0m%s\n"&&
 printf "\e[1;31mUtilisateur : \e[0m%s\n" "$(cat username.txt)" &&
 printf "\e[1;32mMot de passe : \e[0m%s\n" "$(cat password.txt)" &&
 printf "\e[1;31m========================== \e[0m%s\n" &&
-{ /usr/sbin/mysqld & } && sleep 5 && mysql -u root
+/usr/sbin/mysqld &  && sleep 5 && mysql -u root
