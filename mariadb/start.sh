@@ -38,7 +38,7 @@ EOF
 
 printf "%s" "$password" > password.txt
 printf "%s" "$username" > username.txt
-echo "$sql_commands" | /usr/sbin/mysqld & mysql -u root -p -e
+echo "$sql_commands" | mysql -u root -p -e
 
 
 printf "\e[1;31m========================== \e[0m%s\n"&&
