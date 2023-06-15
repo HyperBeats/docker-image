@@ -23,16 +23,5 @@ echo -e "${CYAN}STARTUP /home/container: ${MODIFIED_STARTUP} ${RESET_COLOR}"
 echo -e "${CYAN}⟳${RESET_COLOR} Starting MariaDB..."
 echo -e "${GREEN}✓${RESET_COLOR} Successfully started"
 
-read -r username < username.txt && read -r password < password.txt
-
-sql_commands=$(cat <<EOF
-CREATE USER '$username'@'%' IDENTIFIED BY '$password';
-GRANT ALL PRIVILEGES ON *.* TO '$username'@'%';
-GRANT ALL PRIVILEGES ON proddb.* TO '$username'@'%';
-FLUSH PRIVILEGES;
-EOF
-)
-echo "$sql_commands" | mysql -u root -p
-
 # Run the Server
 eval ${MODIFIED_STARTUP}
