@@ -36,7 +36,6 @@ FLUSH PRIVILEGES;
 EOF
 )
 
-cd /mnt/server
 printf "%s" "$password" > password.txt
 printf "%s" "$username" > username.txt
 echo "$sql_commands" | mysql -u root -p -e
