@@ -13,8 +13,8 @@ GREEN='\033[0;32m'
 INTERNAL_IP=$(ip route get 1 | awk '{print $(NF-2);exit}')
 export INTERNAL_IP
 
-# Print Node.js Version
-node -v
+# Print Python Version
+python --version
 
 # Replace Startup Variables
 # shellcheck disable=SC2086
