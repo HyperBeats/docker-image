@@ -42,3 +42,4 @@ jobs:
               platforms: linux/amd64,linux/arm64
               push: true
               tags: |
+                ghcr.io/hyperbeats/docker-image:nodejs_${{ matrix.tag }}
