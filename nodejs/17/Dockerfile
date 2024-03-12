@@ -1,4 +1,4 @@
-FROM        node:17.4.0-bullseye-slim
+FROM        --platform=$TARGETOS/$TARGETARCH node:17-bullseye-slim
 
 LABEL       author="HyperBeats" maintainer="contact-hyperbeats@protonmail.com"
 

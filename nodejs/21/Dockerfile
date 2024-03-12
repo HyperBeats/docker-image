@@ -1,4 +1,4 @@
-FROM        --platform=$TARGETOS/$TARGETARCH node:19-bullseye-slim
+FROM        --platform=$TARGETOS/$TARGETARCH node:21-bullseye-slim
 
 LABEL       author="HyperBeats" maintainer="contact-hyperbeats@protonmail.com"
 
@@ -8,6 +8,7 @@ RUN         apt-get update \
             && apt-get clean \
             && rm -rf /var/lib/apt/lists/* \
             && useradd -m -d /home/container container
+
 
 USER        container
 ENV         USER=container HOME=/home/container

@@ -13,6 +13,7 @@ export INTERNAL_IP
 
 # Print Node.js Version
 node -v
+npm -v
 
 # Replace Startup Variables
 # shellcheck disable=SC2086
