@@ -4,11 +4,16 @@ LABEL       author="HyperBeats" maintainer="contact-hyperbeats@protonmail.com"
 
 ENV          DEBIAN_FRONTEND noninteractive
 
+# heure fr
+ENV TZ=Europe/Paris 
+
+
 RUN          useradd -m -d /home/container -s /bin/bash container
 
 RUN          ln -s /home/container/ /nonexistent
 
 ENV          USER=container HOME=/home/container
+
 
 ## Update base packages
 RUN          apt update \
@@ -22,10 +27,6 @@ RUN          apt install -y gcc g++ libgcc1 libc++-dev gdb libc6 git wget curl t
 ## Configure locale
 RUN          update-locale lang=en_US.UTF-8 \
              && dpkg-reconfigure --frontend noninteractive locales
-
-# heure fr
-
-RUN         timedatectl set-timezone Europe/Paris
 
 COPY        ./entrypoint.sh /entrypoint.sh
 CMD         [ "/bin/bash", "/entrypoint.sh" ]
