@@ -5,7 +5,6 @@ LABEL       author="HyperBeats" maintainer="contact-hyperbeats@protonmail.com"
 ENV          DEBIAN_FRONTEND noninteractive
 
 # heure fr
-ENV TZ=Europe/Paris 
 
 
 RUN          useradd -m -d /home/container -s /bin/bash container
@@ -17,7 +16,10 @@ ENV          USER=container HOME=/home/container
 
 ## Update base packages
 RUN          apt update \
-             && apt upgrade -y
+             && apt upgrade && apt install tzdata -y
+
+ENV          TZ=Europe/Paris 
+
 
 ## Install dependencies
 RUN          apt install -y gcc g++ libgcc1 libc++-dev gdb libc6 git wget curl tar zip unzip binutils xz-utils liblzo2-2 cabextract iproute2 net-tools netcat telnet libatomic1 libsdl1.2debian libsdl2-2.0-0 \
