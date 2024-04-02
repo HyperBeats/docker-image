@@ -19,7 +19,8 @@ RUN          apt update \
              && apt upgrade -y
 
 RUN          apt install tzdata -y
-ENV          TZ=Europe/Paris 
+
+ENV TZ="Europe/Paris "
 
 
 ## Install dependencies
