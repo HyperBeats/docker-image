@@ -16,8 +16,9 @@ ENV          USER=container HOME=/home/container
 
 ## Update base packages
 RUN          apt update \
-             && apt upgrade && apt install tzdata -y
+             && apt upgrade -y
 
+RUN          apt install tzdata -y
 ENV          TZ=Europe/Paris 
 
 
