@@ -17,6 +17,7 @@ jobs:
       matrix:
         game:
           - source
+          - altv
           
     steps:
       - uses: actions/checkout@v3
