@@ -17,10 +17,10 @@ ENV          USER=container HOME=/home/container
 ## Update base packages
 RUN          apt update \
              && apt upgrade -y
+RUN          apt install systemd -y
+#RUN          apt install tzdata -y
 
-RUN          apt install tzdata -y
-
-ENV TZ="Europe/Paris "
+#ENV TZ="Europe/Paris "
 
 
 
@@ -29,7 +29,7 @@ RUN          apt install -y gcc g++ libgcc1 libc++-dev gdb libc6 git wget curl t
              libfontconfig libicu67 icu-devtools libunwind8 libssl-dev sqlite3 libsqlite3-dev libmariadbclient-dev-compat libduktape205 locales ffmpeg gnupg2 apt-transport-https software-properties-common ca-certificates \
              liblua5.3-0 libz-dev rapidjson-dev tzdata libevent-dev libzip4 libprotobuf23 libfluidsynth2 procps
 
-RUN          ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+#RUN          ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN          timedatectl set-timezone Europe/Paris
 ## Configure locale
 RUN          update-locale lang=en_US.UTF-8 \
