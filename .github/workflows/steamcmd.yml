@@ -35,4 +35,4 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ghcr.io/hyperbeats/docker-image:python_${{ matrix.distro }}
+            ghcr.io/hyperbeats/docker-image:steamcmd_${{ matrix.distro }}
