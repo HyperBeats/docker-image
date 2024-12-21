@@ -1,38 +1,98 @@
+#!/bin/bash
 
-FROM        --platform=$TARGETOS/$TARGETARCH ubuntu:22.04
+#
+# Copyright (c) 2021 Matthew Penner
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
 
-LABEL       author="Matthew Penner" maintainer="matthew@pterodactyl.io"
+# Wait for the container to fully initialize
+sleep 1
+CYAN='\033[0;36m'
+RESET_COLOR='\033[0m'
+GREEN='\033[0;32m'
+# Default the TZ environment variable to UTC.
+TZ=${TZ:-UTC}
+export TZ
 
-LABEL       org.opencontainers.image.source="https://github.com/pterodactyl/yolks"
-LABEL       org.opencontainers.image.licenses=MIT
+# Set environment variable that holds the Internal Docker IP
+INTERNAL_IP=$(ip route get 1 | awk '{print $(NF-2);exit}')
+export INTERNAL_IP
 
-ENV         DEBIAN_FRONTEND=noninteractive
+# Set environment for Steam Proton
+if [ -f "/usr/local/bin/proton" ]; then
+    if [ ! -z ${SRCDS_APPID} ]; then
+	    mkdir -p /home/container/.steam/steam/steamapps/compatdata/${SRCDS_APPID}
+        export STEAM_COMPAT_CLIENT_INSTALL_PATH="/home/container/.steam/steam"
+        export STEAM_COMPAT_DATA_PATH="/home/container/.steam/steam/steamapps/compatdata/${SRCDS_APPID}"
+        # Fix for pipx with protontricks
+        export PATH=$PATH:/root/.local/bin
+    else
+        echo -e "----------------------------------------------------------------------------------"
+        echo -e "WARNING!!! Proton needs variable SRCDS_APPID, else it will not work. Please add it"
+        echo -e "Server stops now"
+        echo -e "----------------------------------------------------------------------------------"
+        exit 0
+        fi
+fi
 
-RUN         dpkg --add-architecture i386 \
-			&& apt update \
-			&& apt upgrade -y \
-			&& apt -y install tar curl gcc g++ lib32gcc-s1 libgcc1 libcurl4-gnutls-dev:i386 libssl-dev:i386 libssl-dev libcurl4:i386 lib32tinfo6 libtinfo6:i386 lib32z1 lib32stdc++6 libncurses5:i386 libcurl3-gnutls:i386 libsdl2-2.0-0:i386 iproute2 gdb libsdl1.2debian libfontconfig1 telnet net-tools netcat tzdata  libtinfo6:i386 libtbb2:i386 libtinfo5:i386 libcurl4-gnutls-dev:i386 libcurl4:i386 libncurses5:i386 libcurl3-gnutls:i386 faketime:i386 libtbb2:i386 \
-			&& apt -y install lib32tinfo6 lib32stdc++6 lib32z1 libtbb2 libtinfo5 libstdc++6 readline-common libncursesw5 libfontconfig1 libnss-wrapper gettext-base libc++-dev libc6-i386 libcurl4 libc6 libc6:i386 libssl3 libssl3:i386 libc6 libc6:i386 xvfb gdb libc++-dev tini 
 
-RUN 		useradd -d /home/container -m container
+# Switch to the container's working directory
+cd /home/container || exit 1
 
-## Specific to pavlov_vr
-RUN			rm /usr/lib/x86_64-linux-gnu/libc++.so  \
-			&& ln -s /usr/lib/x86_64-linux-gnu/libc++.so.1 /usr/lib/x86_64-linux-gnu/libc++.so
+## just in case someone removed the defaults.
+if [ "${STEAM_USER}" == "" ]; then
+    echo -e "steam user is not set.\n"
+    echo -e "Using anonymous user.\n"
+    STEAM_USER=anonymous
+    STEAM_PASS=""
+    STEAM_AUTH=""
+else
+    echo -e "user set to ${STEAM_USER}"
+fi
 
-## install rcon
-RUN         cd /tmp/ \
-            && curl -sSL https://github.com/gorcon/rcon-cli/releases/download/v0.10.3/rcon-0.10.3-amd64_linux.tar.gz > rcon.tar.gz \
-            && tar xvf rcon.tar.gz \
-            && mv rcon-0.10.3-amd64_linux/rcon /usr/local/bin/
+## if auto_update is not set or to 1 update
+if [ -z ${AUTO_UPDATE} ] || [ "${AUTO_UPDATE}" == "1" ]; then 
+    # Update Source Server
+    if [ ! -z ${SRCDS_APPID} ]; then
+	    if [ "${STEAM_USER}" == "anonymous" ]; then
+            ./steamcmd/steamcmd.sh +force_install_dir /home/container +login ${STEAM_USER} ${STEAM_PASS} ${STEAM_AUTH} $( [[ "${WINDOWS_INSTALL}" == "1" ]] && printf %s '+@sSteamCmdForcePlatformType windows' ) +app_update 1007 +app_update ${SRCDS_APPID} $( [[ -z ${SRCDS_BETAID} ]] || printf %s "-beta ${SRCDS_BETAID}" ) $( [[ -z ${SRCDS_BETAPASS} ]] || printf %s "-betapassword ${SRCDS_BETAPASS}" ) $( [[ -z ${HLDS_GAME} ]] || printf %s "+app_set_config 90 mod ${HLDS_GAME}" )  ${INSTALL_FLAGS} $( [[ "${VALIDATE}" == "1" ]] && printf %s 'validate' ) +quit
+	    else
+            numactl --physcpubind=+0 ./steamcmd/steamcmd.sh +force_install_dir /home/container +login ${STEAM_USER} ${STEAM_PASS} ${STEAM_AUTH} $( [[ "${WINDOWS_INSTALL}" == "1" ]] && printf %s '+@sSteamCmdForcePlatformType windows' ) +app_update 1007 +app_update ${SRCDS_APPID} $( [[ -z ${SRCDS_BETAID} ]] || printf %s "-beta ${SRCDS_BETAID}" ) $( [[ -z ${SRCDS_BETAPASS} ]] || printf %s "-betapassword ${SRCDS_BETAPASS}" ) $( [[ -z ${HLDS_GAME} ]] || printf %s "+app_set_config 90 mod ${HLDS_GAME}" ) ${INSTALL_FLAGS} $( [[ "${VALIDATE}" == "1" ]] && printf %s 'validate' ) +quit
+	    fi
+    else
+        echo -e "No appid set. Starting Server"
+    fi
 
-USER        container
-ENV         USER=container HOME=/home/container
-WORKDIR     /home/container
+else
+    echo -e "Not updating game server as auto update was set to 0. Starting Server"
+fi
 
-STOPSIGNAL SIGINT
-
-COPY        --chown=container:container ../entrypoint.sh /entrypoint.sh
-RUN         chmod +x /entrypoint.sh
-ENTRYPOINT    ["/usr/bin/tini", "-g", "--"]
-CMD         ["/entrypoint.sh"]
+# Replace Startup Variables
+MODIFIED_STARTUP=$(echo ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')
+echo -e ":/home/container$ ${MODIFIED_STARTUP}"
+echo "   ___  ____ _      __    __ ______  _______________  _______"
+echo "  / _ \/ __ \ | /| / /___/ // / __ \/ __/_  __/  _/ |/ / ___/"
+echo " / , _/ /_/ / |/ |/ /___/ _  / /_/ /\ \  / / _/ //    / (_ / "
+echo "/_/|_|\____/|__/|__/   /_//_/\____/___/ /_/ /___/_/|_/\___/  "                                                             
+echo -e "${CYAN}STARTUP /home/container: ${MODIFIED_STARTUP} ${RESET_COLOR}"
+echo -e "${CYAN}⟳${RESET_COLOR} Starting Container..."
+echo -e "${GREEN}✓${RESET_COLOR} Successfully started"
+# Run the Server
+eval ${MODIFIED_STARTUP}
