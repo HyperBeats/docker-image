@@ -2,7 +2,7 @@ FROM        --platform=$TARGETOS/$TARGETARCH debian:bookworm-slim
 
 LABEL       author="HyperBeats" maintainer="contact-hyperbeats@protonmail.com"
 
-ENV          DEBIAN_FRONTEND noninteractive
+ENV         DEBIAN_FRONTEND=noninteractive
 
 # heure fr
 
