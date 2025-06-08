@@ -2,45 +2,73 @@ FROM        --platform=$TARGETOS/$TARGETARCH debian:bookworm-slim
 
 LABEL       author="HyperBeats" maintainer="contact-hyperbeats@protonmail.com"
 
-ENV          DEBIAN_FRONTEND noninteractive
+ENV         DEBIAN_FRONTEND=noninteractive
 
-# heure fr
+RUN         dpkg --add-architecture i386 \
+            && apt update \
+            && apt upgrade -y \
+            && apt install -y \
+                curl \
+                g++ \
+                gcc \
+                gdb \
+                iproute2 \
+                locales \
+                net-tools \
+                netcat-traditional \
+                tar \
+                telnet \
+                tini \
+                tzdata \
+                wget \
+                xvfb \
+                lib32gcc-s1 \
+                lib32stdc++6 \
+                lib32tinfo6 \
+                lib32z1 \
+                libcurl3-gnutls:i386 \
+                libcurl4-gnutls-dev:i386 \
+                libcurl4:i386 \
+                libfontconfig1 \
+                libgcc-11-dev \
+                libgcc-12-dev \
+                libncurses5:i386 \
+                libsdl1.2debian \
+                libsdl2-2.0-0 \
+                libsdl2-2.0-0:i386 \
+                libssl-dev:i386 \
+                libtinfo6:i386
+
+# Install rcon
+RUN         cd /tmp/ \
+            && curl -sSL https://github.com/gorcon/rcon-cli/releases/download/v0.10.3/rcon-0.10.3-amd64_linux.tar.gz > rcon.tar.gz \
+            && tar xvf rcon.tar.gz \
+            && mv rcon-0.10.3-amd64_linux/rcon /usr/local/bin/
 
 
-RUN          useradd -m -d /home/container -s /bin/bash container
+# Temp fix for things that still need libssl1.1
+RUN         if [ "$(uname -m)" = "x86_64" ]; then \
+                wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_amd64.deb && \
+                dpkg -i libssl1.1_1.1.0g-2ubuntu4_amd64.deb && \
+                rm libssl1.1_1.1.0g-2ubuntu4_amd64.deb; \
+            fi
 
-RUN          ln -s /home/container/ /nonexistent
+# Set the locale
+RUN         sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
+            locale-gen
+ENV         LANG=en_US.UTF-8
+ENV         LANGUAGE=en_US:en
+ENV         LC_ALL=en_US.UTF-8
 
-ENV          USER=container HOME=/home/container
+# Setup user and working directory
+RUN         useradd -m -d /home/container -s /bin/bash container
+USER        container
+ENV         USER=container HOME=/home/container
+WORKDIR     /home/container
 
+STOPSIGNAL  SIGINT
 
-## Update base packages
-RUN          apt update \
-             && apt upgrade -y
-RUN apt-get install -y \
-             sudo \
-             systemd \
-             tzdata
-#RUN          apt install tzdata -y
-
-ENV TZ=Europe/Paris
-
-# Appliquer le fuseau horaire
-
-
-
-## Install dependencies
-RUN          apt install -y gcc g++ libgcc1 libc++-dev gdb libc6 git wget curl tar zip unzip binutils xz-utils liblzo2-2 cabextract iproute2 net-tools netcat telnet libatomic1 libsdl1.2debian libsdl2-2.0-0 \
-             libfontconfig libicu67 icu-devtools libunwind8 libssl-dev sqlite3 libsqlite3-dev libmariadbclient-dev-compat libduktape205 locales ffmpeg gnupg2 apt-transport-https software-properties-common ca-certificates \
-             liblua5.3-0 libz-dev rapidjson-dev tzdata libevent-dev libzip4 libprotobuf23 libfluidsynth2 procps
-
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-## Configure locale
-RUN          update-locale lang=en_US.UTF-8 \
-             && dpkg-reconfigure --frontend noninteractive locales
-
-COPY        ./entrypoint.sh /entrypoint.sh
-CMD         [ "/bin/bash", "/entrypoint.sh" ]
-
+COPY        --chown=container:container ../entrypoint.sh /entrypoint.sh
+RUN         chmod +x /entrypoint.sh
+ENTRYPOINT  ["/usr/bin/tini", "-g", "--"]
+CMD         ["/entrypoint.sh"]
