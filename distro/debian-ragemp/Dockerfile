@@ -40,12 +40,6 @@ RUN curl -sSL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-install.sh \
     && /tmp/dotnet-install.sh --channel 3.1 --install-dir /usr/share/dotnet \
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
 
-## Install .NET 6.0 + 7.0 SDK via apt
-RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb \
-    && dpkg -i packages-microsoft-prod.deb \
-    && apt update -y \
-    && apt install -y dotnet-sdk-6.0 dotnet-sdk-7.0 libgdiplus
-
 ## Configure locale
 RUN          update-locale lang=en_US.UTF-8 \
              && dpkg-reconfigure --frontend noninteractive locales
