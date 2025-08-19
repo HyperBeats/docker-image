@@ -20,10 +20,12 @@
             && apt update -y \
             && apt install -y dotnet-sdk-6.0 dotnet-sdk-7.0 libgdiplus
 
-    RUN     wget https://packages.microsoft.com/config/debian/11/packages-microsoft-prod.deb -O packages-microsoft-prod-11.deb \
-            && dpkg -i packages-microsoft-prod-11.deb \
-            && apt update -y \
-            && apt install -y dotnet-sdk-3.1
+    RUN     wget https://download.visualstudio.microsoft.com/download/pr/40a1f4f5-2f73-4661-9a19-7d55d26ab9dd/6b1c82a2e83a7e3a3b3bbf7a4a4d2eb3/dotnet-sdk-3.1.426-linux-x64.tar.gz \
+            -O dotnet-sdk-3.1.tar.gz \
+            && mkdir -p /usr/share/dotnet \
+            && tar -xzf dotnet-sdk-3.1.tar.gz -C /usr/share/dotnet \
+            && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
+
     
     RUN     update-locale lang=en_US.UTF-8 \
             && dpkg-reconfigure --frontend noninteractive locales
