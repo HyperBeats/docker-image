@@ -1,10 +1,11 @@
 FROM         --platform=$TARGETOS/$TARGETARCH debian:bookworm-slim
 
-LABEL       author="HyperBeats" maintainer="contact-hyperbeats@protonmail.com"
+LABEL        author="HyperBeats" maintainer="contact-hyperbeats@protonmail.com"
 
 ENV          DEBIAN_FRONTEND=noninteractive
 
 RUN          useradd -m -d /home/container -s /bin/bash container
+
 RUN          ln -s /home/container/ /nonexistent
 
 ENV          USER=container HOME=/home/container
@@ -16,7 +17,7 @@ RUN          apt update \
 ## Install dependencies
 RUN          apt install -y gcc g++ libgcc-12-dev libc++-dev gdb libc6 git wget curl tar zip unzip binutils xz-utils liblzo2-2 cabextract iproute2 net-tools netcat-traditional telnet libatomic1 libsdl1.2debian libsdl2-2.0-0 \
              libfontconfig1 icu-devtools libunwind8 libssl-dev sqlite3 libsqlite3-dev libmariadb-dev-compat libduktape207 locales ffmpeg gnupg2 apt-transport-https software-properties-common ca-certificates \
-             liblua5.3-0 libz3-dev libzadc4 rapidjson-dev tzdata libevent-dev libzip4 libprotobuf32 libfluidsynth3 procps libstdc++6 tini curl
+             liblua5.3-0 libz3-dev libzadc4 rapidjson-dev tzdata libevent-dev libzip4 libprotobuf32 libfluidsynth3 procps libstdc++6 tini
 
 # Temp fix for libicu66.1 for RAGE-MP and libssl1.1 for fivem and many more
 RUN         if [ "$(uname -m)" = "x86_64" ]; then \
@@ -26,7 +27,6 @@ RUN         if [ "$(uname -m)" = "x86_64" ]; then \
                 dpkg -i libssl1.1_1.1.0g-2ubuntu4_amd64.deb && \
                 rm libicu66_66.1-2ubuntu2.1_amd64.deb libssl1.1_1.1.0g-2ubuntu4_amd64.deb; \
             fi
-
 # ARM64
 RUN         if [ ! "$(uname -m)" = "x86_64" ]; then \
                 wget http://ports.ubuntu.com/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_arm64.deb && \
@@ -34,15 +34,18 @@ RUN         if [ ! "$(uname -m)" = "x86_64" ]; then \
                 rm libssl1.1_1.1.1f-1ubuntu2_arm64.deb; \
             fi
 
-## Install .NET Core 3.1 SDK via dotnet-install.sh
-RUN curl -sSL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-install.sh \
-    && chmod +x /tmp/dotnet-install.sh \
-    && /tmp/dotnet-install.sh --channel 3.1 --install-dir /usr/share/dotnet \
-    && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
-
 ## Configure locale
 RUN          update-locale lang=en_US.UTF-8 \
              && dpkg-reconfigure --frontend noninteractive locales
+## Installer le runtime .NET 8 (compatible .NET Core / CoreCLR)
+
+RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb \
+    && dpkg -i packages-microsoft-prod.deb \
+    && rm packages-microsoft-prod.deb \
+    && apt update \
+    && apt install -y dotnet-runtime-8.0 aspnetcore-runtime-8.0 \
+    && apt clean && rm -rf /var/lib/apt/lists/*
+
 
 WORKDIR     /home/container
 
