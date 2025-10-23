@@ -37,14 +37,17 @@ RUN         if [ ! "$(uname -m)" = "x86_64" ]; then \
 ## Configure locale
 RUN          update-locale lang=en_US.UTF-8 \
              && dpkg-reconfigure --frontend noninteractive locales
-## Installer le runtime .NET 8 (compatible .NET Core / CoreCLR)
 
-RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg \
-    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/debian/12/prod bookworm main" | tee /etc/apt/sources.list.d/microsoft-prod.list \
-    && apt-get update \
-    && apt-get install -y dotnet-runtime-8.0 aspnetcore-runtime-8.0 \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+## Install .NET 8 Runtime using official Microsoft script
+RUN curl -fsSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh \
+    && chmod +x dotnet-install.sh \
+    && ./dotnet-install.sh --runtime dotnet --version 8.0.0 \
+    && ./dotnet-install.sh --runtime aspnetcore --version 8.0.0 \
+    && rm dotnet-install.sh
+
+# Add dotnet to PATH for all users
+ENV DOTNET_ROOT=/root/.dotnet
+ENV PATH=$PATH:/root/.dotnet:/home/container/.dotnet
 
 
 WORKDIR     /home/container
