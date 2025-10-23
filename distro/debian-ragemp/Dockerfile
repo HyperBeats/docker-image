@@ -39,12 +39,12 @@ RUN          update-locale lang=en_US.UTF-8 \
              && dpkg-reconfigure --frontend noninteractive locales
 ## Installer le runtime .NET 8 (compatible .NET Core / CoreCLR)
 
-RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb \
-    && dpkg -i packages-microsoft-prod.deb \
-    && rm packages-microsoft-prod.deb \
-    && apt update \
-    && apt install -y dotnet-runtime-8.0 aspnetcore-runtime-8.0 \
-    && apt clean && rm -rf /var/lib/apt/lists/*
+RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/debian/12/prod bookworm main" | tee /etc/apt/sources.list.d/microsoft-prod.list \
+    && apt-get update \
+    && apt-get install -y dotnet-runtime-8.0 aspnetcore-runtime-8.0 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 
 WORKDIR     /home/container
