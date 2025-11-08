@@ -26,10 +26,3 @@ echo -e "${CYAN}⟳${RESET_COLOR} Starting Container..."
 echo -e "${GREEN}✓${RESET_COLOR} Successfully started"
 
 eval "${MODIFIED_STARTUP}"
-
-EXIT_CODE=$?
-if [ $EXIT_CODE -ne 0 ]; then
-    echo -e "\n${CYAN}[Entrypoint]${RESET_COLOR} Le processus s'est terminé avec le code ${EXIT_CODE}"
-else
-    echo -e "\n${GREEN}[Entrypoint]${RESET_COLOR} Serveur arrêté proprement."
-fi
