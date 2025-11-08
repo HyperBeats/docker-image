@@ -20,9 +20,11 @@ RUN apt update && apt upgrade -y && \
     libfluidsynth3 procps libstdc++6 tini liblua5.3-0 rapidjson-dev
 
 
-RUN update-locale LANG=en_US.UTF-8 && \
-    dpkg-reconfigure --frontend noninteractive locales
-
+RUN apt install -y locales && \
+    sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
+    locale-gen en_US.UTF-8 && \
+    update-locale LANG=en_US.UTF-8
+    
 RUN update-ca-certificates
 
 RUN apt autoremove -y && apt clean && rm -rf /var/lib/apt/lists/*
