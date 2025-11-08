@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /home/container || exit 1
+cd /home/container
 
 CYAN='\033[0;36m'
 RESET_COLOR='\033[0m'
