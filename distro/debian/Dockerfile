@@ -38,17 +38,6 @@ RUN         if [ ! "$(uname -m)" = "x86_64" ]; then \
 RUN          update-locale lang=en_US.UTF-8 \
              && dpkg-reconfigure --frontend noninteractive locales
 
-## Install .NET 8 Runtime using official Microsoft script
-RUN curl -fsSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh \
-    && chmod +x dotnet-install.sh \
-    && ./dotnet-install.sh --runtime dotnet --version 8.0.0 \
-    && ./dotnet-install.sh --runtime aspnetcore --version 8.0.0 \
-    && rm dotnet-install.sh
-
-# Add dotnet to PATH for all users
-ENV DOTNET_ROOT=/root/.dotnet
-ENV PATH=$PATH:/root/.dotnet:/home/container/.dotnet
-
 
 WORKDIR     /home/container
 
