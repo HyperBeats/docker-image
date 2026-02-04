@@ -1,2 +1,2 @@
 #!/bin/sh
-exec /TwitchDropsMiner/TwitchDropsMiner --stdlog
+APP_DIR="${TDM_APP_DIR:-/home/container/TwitchDropsMiner}"
