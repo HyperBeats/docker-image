@@ -28,6 +28,7 @@ RUN dpkg --add-architecture i386 && \
         libicu-dev libgdiplus lib32gcc-s1 lib32stdc++6 \
         libfontconfig1 libpulse0 libasound2 \
         xvfb x11-xkb-utils xkb-data xauth && \
+    # Génération des locales nécessaires pour Source 2[cite: 7]
     sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
     locale-gen en_US.UTF-8 && \
     rm -rf /var/lib/apt/lists/*
@@ -42,6 +43,9 @@ RUN mkdir -p /opt/steamcmd && \
     curl -fsSL https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz | tar -xz -C /opt/steamcmd && \
     chmod +x /opt/steamcmd/steamcmd.sh && \
     chmod -R a+rX /opt/steamcmd
+
+RUN useradd -m -d /home/container -s /bin/bash container
+COPY --chmod=0755 entrypoint.sh /entrypoint.sh
 
 USER container
 WORKDIR /home/container

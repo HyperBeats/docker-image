@@ -2,10 +2,6 @@
 set -u
 cd /home/container
 
-
-CYAN='\033[0;36m'
-RESET_COLOR='\033[0m'
-GREEN='\033[0;32m'
 # ---- Banner ----
 echo "Running on Debian $(cat /etc/debian_version 2>/dev/null || echo unknown)"
 echo "Current timezone: $(cat /etc/timezone 2>/dev/null || echo UTC)"
@@ -69,14 +65,6 @@ if [ "${XVFB}" = "1" ]; then
 fi
 
 # ---- 4. Execution ----
-MODIFIED_STARTUP=$(echo -e ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')
-
-echo "   ___  ____ _      __    __ ______  _______________  _______"
-echo "  / _ \/ __ \ | /| / /___/ // / __ \/ __/_  __/  _/ |/ / ___/"
-echo " / , _/ /_/ / |/ |/ /___/ _  / /_/ /\ \  / / _/ //    / (_ / "
-echo "/_/|_|\____/|__/|__/   /_//_/\____/___/ /_/ /___/_/|_/\___/  "                                                             
-echo -e "${CYAN}STARTUP /home/container: ${MODIFIED_STARTUP} ${RESET_COLOR}"
-echo -e "${CYAN}⟳${RESET_COLOR} Starting Gmod..."
-echo -e "${GREEN}✓${RESET_COLOR} Successfully started"
-
-eval ${MODIFIED_STARTUP}
+MODIFIED_STARTUP=$(printf '%s' "${STARTUP}" | sed -e 's/{{/${/g' -e 's/}}/}/g')
+echo ":/home/container$ ${MODIFIED_STARTUP}"
+eval exec "${MODIFIED_STARTUP}"
