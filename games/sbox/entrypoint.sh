@@ -6,7 +6,14 @@ cd /home/container
 echo "Running on Debian $(cat /etc/debian_version 2>/dev/null || echo unknown)"
 echo "Current timezone: $(cat /etc/timezone 2>/dev/null || echo UTC)"
 
+
+
 INTERNAL_IP=$(ip route get 1 2>/dev/null | awk '{print $(NF-2);exit}')
+
+CYAN='\033[0;36m'
+RESET_COLOR='\033[0m'
+GREEN='\033[0;32m'
+
 export INTERNAL_IP
 
 : "${SRCDS_APPID:=1892930}"
@@ -64,7 +71,15 @@ if [ "${XVFB}" = "1" ]; then
     fi
 fi
 
-# ---- 4. Execution ----
-MODIFIED_STARTUP=$(printf '%s' "${STARTUP}" | sed -e 's/{{/${/g' -e 's/}}/}/g')
-echo ":/home/container$ ${MODIFIED_STARTUP}"
-eval exec "${MODIFIED_STARTUP}"
+
+MODIFIED_STARTUP=$(echo ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')
+echo -e ":/home/container$ ${MODIFIED_STARTUP}"
+echo "   ___  ____ _      __    __ ______  _______________  _______"
+echo "  / _ \/ __ \ | /| / /___/ // / __ \/ __/_  __/  _/ |/ / ___/"
+echo " / , _/ /_/ / |/ |/ /___/ _  / /_/ /\ \  / / _/ //    / (_ / "
+echo "/_/|_|\____/|__/|__/   /_//_/\____/___/ /_/ /___/_/|_/\___/  "                                                             
+echo -e "${CYAN}STARTUP /home/container: ${MODIFIED_STARTUP} ${RESET_COLOR}"
+echo -e "${CYAN}⟳${RESET_COLOR} Starting Container..."
+echo -e "${GREEN}✓${RESET_COLOR} Successfully started"
+# Run the Server
+eval exec ${MODIFIED_STARTUP}
