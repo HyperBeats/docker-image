@@ -1,47 +1,48 @@
-FROM --platform=$TARGETOS/$TARGETARCH debian:trixie
+FROM debian:trixie-slim
+
+ARG DOTNET_VERSION=10.0.2
 
 LABEL author="HyperBeats" maintainer="contact-hyperbeats@protonmail.com"
 
-ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive \
+    LC_ALL=en_US.UTF-8 \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US:en \
+    TZ=UTC \
+    HOME=/home/container \
+    USER=container \
+    SRCDS_APPID=1892930 \
+    AUTO_UPDATE=1 \
+    VALIDATE=1 \
+    DISPLAY=:0 \
+    XVFB=1 \
+    DISPLAY_WIDTH=1024 \
+    DISPLAY_HEIGHT=768 \
+    DISPLAY_DEPTH=24
 
-RUN dpkg --add-architecture i386 \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
-        libc6 libc6:i386 \
-        libstdc++6 libstdc++6:i386 \
-        libgcc-s1 libgcc-s1:i386 \
-        tar curl gcc g++ wget tini ca-certificates git \
-        lib32gcc-s1 libgcc-14-dev \
-        iproute2 gdb telnet net-tools netcat-traditional tzdata numactl \
-        libfontconfig1 libfreetype6 libxi6 libxcursor1 \
-        libxrandr2 libxinerama1 libsdl2-2.0-0 libvulkan1 libopenal1 \
-        libcurl4-gnutls-dev:i386 libssl-dev:i386 libcurl4:i386 \
-        lib32tinfo6 libtinfo6:i386 lib32z1 lib32stdc++6 \
-        libncurses6:i386 libcurl3t64-gnutls:i386 libsdl2-2.0-0:i386 \
-        libsdl1.2debian \
-    && useradd -m -d /home/container container \
-    && rm -rf /var/lib/apt/lists/*
+RUN dpkg --add-architecture i386 && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        ca-certificates curl wget gnupg dirmngr \
+        tar unzip xz-utils locales tzdata gosu file procps iproute2 \
+        libicu-dev libgdiplus lib32gcc-s1 lib32stdc++6 \
+        libfontconfig1 libpulse0 libasound2 \
+        xvfb x11-xkb-utils xkb-data xauth && \
+    sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen en_US.UTF-8 && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /usr/share/dotnet \
-    && wget https://dot.net/v1/dotnet-install.sh -O /tmp/dotnet-install.sh \
-    && chmod +x /tmp/dotnet-install.sh \
-    && /tmp/dotnet-install.sh --channel 10.0 --install-dir /usr/share/dotnet \
-    && rm /tmp/dotnet-install.sh
+RUN mkdir -p /opt/dotnet && \
+    curl -fsSL -o /tmp/dotnet.tar.gz "https://builds.dotnet.microsoft.com/dotnet/Runtime/${DOTNET_VERSION}/dotnet-runtime-${DOTNET_VERSION}-linux-x64.tar.gz" && \
+    tar -xzf /tmp/dotnet.tar.gz -C /opt/dotnet && \
+    rm /tmp/dotnet.tar.gz && \
+    ln -s /opt/dotnet/dotnet /usr/local/bin/dotnet
 
-ENV DOTNET_ROOT=/usr/share/dotnet
-ENV PATH=$PATH:/usr/share/dotnet
+RUN mkdir -p /opt/steamcmd && \
+    curl -fsSL https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz | tar -xz -C /opt/steamcmd && \
+    chmod +x /opt/steamcmd/steamcmd.sh && \
+    chmod -R a+rX /opt/steamcmd
 
 USER container
-
-ENV USER=container
-ENV HOME=/home/container
-
 WORKDIR /home/container
-
-STOPSIGNAL SIGINT
-
-COPY --chown=container:container ./entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-ENTRYPOINT ["/usr/bin/tini", "-g", "--"]
-CMD ["/entrypoint.sh"]
+CMD ["/bin/bash", "/entrypoint.sh"]
