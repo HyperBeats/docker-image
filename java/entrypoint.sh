@@ -14,8 +14,6 @@ java -version
 INTERNAL_IP=$(ip route get 1 | awk '{print $(NF-2);exit}')
 export INTERNAL_IP
 
-# Replace Startup Variables
-# shellcheck disable=SC2086
 MODIFIED_STARTUP=$(echo -e ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')
 echo "   ___  ____ _      __    __ ______  _______________  _______"
 echo "  / _ \/ __ \ | /| / /___/ // / __ \/ __/_  __/  _/ |/ / ___/"
@@ -26,5 +24,6 @@ echo -e "${CYAN}⟳${RESET_COLOR} Starting Java..."
 echo -e "${GREEN}✓${RESET_COLOR} Successfully started"
 
 # Run the Server
-# shellcheck disable=SC2086
 eval ${MODIFIED_STARTUP}
+
+
