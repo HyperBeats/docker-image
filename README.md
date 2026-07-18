@@ -47,6 +47,17 @@
 * [`java_19`](/java/19)
   * `ghcr.io/hyperbeats/docker-image:java_19`
 * [`java_20`](/java/20)
-  * `ghcr.io/hyperbeats/docker-image:java_20` 
+  * `ghcr.io/hyperbeats/docker-image:java_20`
+* [`java_21`](/java/21)
+  * `ghcr.io/hyperbeats/docker-image:java_21` 
+* [`java_22`](/java/22)
+  * `ghcr.io/hyperbeats/docker-image:java_22`
+* [`java_23`](/java/23)
+  * `ghcr.io/hyperbeats/docker-image:java_23`
+* [`java_24`](/java/24)
+  * `ghcr.io/hyperbeats/docker-image:java_24`
+* [`java_25`](/java/25)
+  * `ghcr.io/hyperbeats/docker-image:java_25` 
+   
   
   
